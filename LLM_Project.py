@@ -38,7 +38,7 @@ def pull_baseball_data(selected_years, iterate, count):
             df = pd.DataFrame(values, columns = list(r_player_pitching['stats'][0].keys()))
             merged_df = pd.concat([merged_df, df], ignore_index=True)
             if (count == iterate):
-                merged_df.to_csv("_".join(map(str, selected_years)) + "_data_player_pitch.csv", index=False)
+                merged_df[['year', 'playerFullName', 'teamName', 'position', 'leagueName', 'era', 'holds', 'whip', 'outs']].to_csv("_".join(map(str, selected_years)) + "_data_player_pitch.csv", index=False)
         elif url_st == 'player hitting':
             iterate += 1
             player_hitting_url = "https://bdfed.stitch.mlbinfra.com/bdfed/stats/player?stitch_env=prod&season=" + year + "&sportId=1&stats=season&group=hitting&gameType=R&limit=30&offset=0&sortStat=onBasePlusSlugging&order=desc"
@@ -47,8 +47,8 @@ def pull_baseball_data(selected_years, iterate, count):
             df = pd.DataFrame(values, columns = list(r_player_hitting['stats'][0].keys()))
             merged_df = pd.concat([merged_df, df], ignore_index=True)
             if (count == iterate):
-                merged_df.to_csv("_".join(map(str, selected_years)) + "_data_player_hitt.csv", index=False)
-        elif url_st == 'team pitching':
+                merged_df[['year', 'playerFullName', 'teamName', 'position', 'leagueName', 'strikeoutsPerPlateAppearance', 'runs', 'doubles', 'triples', 'rbi']].to_csv("_".join(map(str, selected_years)) + "_data_player_hitt.csv", index=False)
+        elif url_st == 'team hitting':
             iterate += 1
             team_hitting_url = "https://bdfed.stitch.mlbinfra.com/bdfed/stats/team?stitch_env=prod&sportId=1&gameType=R&group=hitting&order=desc&sortStat=onBasePlusSlugging&stats=season&season=" + year + "&limit=30&offset=0"
             r_team_hitting = requests.get(url=team_hitting_url).json()
@@ -56,8 +56,8 @@ def pull_baseball_data(selected_years, iterate, count):
             df = pd.DataFrame(values, columns = list(r_team_hitting['stats'][0].keys()))
             merged_df = pd.concat([merged_df, df], ignore_index=True)
             if (count == iterate):
-                merged_df.to_csv("_".join(map(str, selected_years)) + "_data_team_pitch.csv", index=False)
-        elif url_st == 'team hitting':
+                merged_df[['year', 'teamName', 'leagueName', 'runs', 'doubles', 'triples', 'homeRuns', 'hits', 'rbi']].to_csv("_".join(map(str, selected_years)) + "_data_team_hitt.csv", index=False)
+        elif url_st == 'team pitching':
             iterate += 1
             team_pitching_url = "https://bdfed.stitch.mlbinfra.com/bdfed/stats/team?stitch_env=prod&sportId=1&gameType=R&group=pitching&order=asc&sortStat=earnedRunAverage&stats=season&season=" + year + "&limit=30&offset=0"
             r_team_pitching = requests.get(url=team_pitching_url).json()
@@ -65,7 +65,7 @@ def pull_baseball_data(selected_years, iterate, count):
             df = pd.DataFrame(values, columns = list(r_team_pitching['stats'][0].keys()))
             merged_df = pd.concat([merged_df, df], ignore_index=True)
             if (count == iterate):
-                merged_df.to_csv("_".join(map(str, selected_years)) + "_data_team_hitt.csv", index=False)
+                merged_df[['year', 'teamName', 'leagueName', 'strikeOuts', 'era', 'inningsPitched', 'holds', 'whip', 'battersFaced', 'balks']].to_csv("_".join(map(str, selected_years)) + "_data_team_pitch.csv", index=False)
 
 
 st.write("Selected Years: ", selected_years)
@@ -123,7 +123,7 @@ if user_csv is not None:
 
     user_input_data =st.text_input("Ask a question about your CSV: ")
 
-    llm = OpenAI(temperature = 0)
+    llm = OpenAI(temperature = 0, model_name="text-davinci-003")
     csv = create_csv_agent(llm, user_csv.name, verbose=True)
     res = csv.run(user_input_data)
 
